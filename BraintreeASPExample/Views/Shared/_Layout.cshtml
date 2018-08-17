@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+
+    <title>BraintreeASPExample</title>
+    <link rel=stylesheet type=text/css href="/App_Themes/css/app.css">
+    <link rel=stylesheet type=text/css href="/App_Themes/css/overrides.css">
+    <link rel="icon" type="image/png" href="/App_Themes/images/favicon.png">
+</head>
+<body>
+    <header class="main">
+        <div class="container wide">
+            <div class="content slim">
+                <div class="set">
+                    <div class="icon">
+                        <img src="@Url.Content(String.Format("/App_Themes/images/{0}.png", "KFC Logo"))" alt="">
+                    </div>
+                        
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="notice-wrapper">
+           @{
+            string flash = TempData["Flash"] as string;
+            if (flash != null)
+            {
+                <div class="show notice error notice-error">
+                    <span class="notice-message">@flash</span>
+                </div>
+            }   
+           }
+        </div>
+    </header>
+    
+    @RenderBody()
+</body>
+</html>
