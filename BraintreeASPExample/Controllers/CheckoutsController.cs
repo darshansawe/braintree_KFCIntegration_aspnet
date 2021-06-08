@@ -24,7 +24,12 @@ namespace BraintreeASPExample.Controllers
         public ActionResult New()
         {
             var gateway = config.GetGateway();
-            var clientToken = gateway.ClientToken.Generate();
+            var clientToken = gateway.ClientToken.Generate(
+                    new ClientTokenRequest
+                    {
+                        CustomerId = "a68d1c1a-7c6c-46d3-9208-4fcf38727912"
+                    }
+                );
             ViewBag.ClientToken = clientToken;
             return View();
         }
@@ -32,7 +37,7 @@ namespace BraintreeASPExample.Controllers
         public ActionResult Create()
         {
             var gateway = config.GetGateway();
-            Decimal amount;
+            decimal amount;
 
             try
             {
@@ -45,15 +50,33 @@ namespace BraintreeASPExample.Controllers
             }
 
             var nonce = Request["payment_method_nonce"];
+            //var nonce = "fake-processor-declined-visa-nonce";
+
             var request = new TransactionRequest
             {
                 Amount = amount,
                 PaymentMethodNonce = nonce,
+                Descriptor = new DescriptorRequest
+                {
+                    Name = "KFC* LAB Aloha QSR",
+                    Phone = "",
+                    Url = "kfc.com.au"
+                },
+                CustomFields = new Dictionary<string, string>
+                {
+                    { "externalid", "7777" }, // LOCATED WITHIN ALOHA
+                    { "ordertype", "Web Orders Catering" }, // SUBJECT TO KFC REQUIREMENTS
+                    { "pickupdate", "1/10/2019" } //SUBJECT TO KFC REQUIREMENTS
+                    
+                },
                 Options = new TransactionOptionsRequest
                 {
                     SubmitForSettlement = true
                 }
             };
+
+            PaymentMethodNonce paymentMethodNonce = gateway.PaymentMethodNonce.Find(nonce);
+            String type = paymentMethodNonce.Type;
 
             Result<Transaction> result = gateway.Transaction.Sale(request);
             if (result.IsSuccess())
